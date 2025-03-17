@@ -1,13 +1,11 @@
 from __future__ import absolute_import
 
-import logging
+from structurebot.logger import logger
 from collections import Counter
 
 from methodtools import lru_cache
 
 from .util import ncr, name_to_id, names_to_ids, HTTPError  # esi_client, esi_pub, esi_auth, esi_datasource
-
-logger = logging.getLogger(__name__)
 
 
 def is_system_id(location_id):
@@ -70,6 +68,8 @@ class Category(object):
         self.category_id = category_id
         self.groups = groups
 
+        logger.debug("Class init", extra={**self.__dict__})
+
     @lru_cache(maxsize=1000)
     @classmethod
     def from_id(cls, id):
@@ -131,6 +131,8 @@ class Group(object):
         self.category_id = category_id
         self.types = types
         self.category = category or Category.from_id(category_id)
+
+        logger.debug("Class init", extra={**self.__dict__})
 
     @lru_cache(maxsize=1000)
     @classmethod
@@ -199,6 +201,8 @@ class BaseType(object):
         self.attributes = {a['attribute_id']: a['value'] for a in dogma_attributes}
         self.dogma_effects = dogma_effects
         self.effects = {e['effect_id']: e['is_default'] for e in dogma_effects}
+
+        logger.debug("Class init", extra={**self.__dict__})
 
     @classmethod
     def from_id(cls, ident):
@@ -299,6 +303,8 @@ class Asset(BaseType):
         self.location_flag = location_flag
         self.xyz = xyz
 
+        logger.debug("Class init", extra={**self.__dict__})
+
     @classmethod
     def from_id(cls, ident, **kwargs):
         asset = super(Asset, cls).from_id(ident)
@@ -387,6 +393,8 @@ class Fitting(object):
         self.SubSystemSlot = SubSystemSlot
         self.StructureFuel = StructureFuel
         self.QuantumCoreRoom = QuantumCoreRoom
+
+        logger.debug("Class init", extra={**self.__dict__})
 
     @classmethod
     def from_assets(cls, assets):

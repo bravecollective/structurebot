@@ -1,14 +1,12 @@
 from __future__ import absolute_import
 
 import datetime
-import logging
 
 from .assets import Fitting, Asset, Type
 from .config import CONFIG
 from .universe import System
 from .util import ncr, name_to_id, ids_to_names, HTTPError
-
-logger = logging.getLogger(__name__)
+from structurebot.logger import logger
 
 
 class Structure(object):
@@ -74,6 +72,8 @@ class Structure(object):
                     self.online_services.append(service['name'])
                 if service['state'] == 'offline':
                     self.offline_services.append(service['name'])
+
+        logger.debug("Class init", extra={**self.__dict__})
 
     @property
     def packaged_volume(self):
@@ -186,7 +186,7 @@ class Structure(object):
         try:
             assets = assets or Asset.from_entity_id(corporation_id, 'corporations')
         except Exception as e:
-            print('Error reading assets: ' + str(e))
+            logger.critical("Error reading assets: {}".format(e))
 
         """ Old code:
         endpoint = 'get_corporation_corporation_id_mining_extractions'

@@ -1,15 +1,12 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import logging
-
 import requests
 from requests.exceptions import HTTPError
 
 from .config import *
 from .neucore_requester import NCR
-
-logger = logging.getLogger(__name__)
+from structurebot.logger import logger
 
 datasource = CONFIG['NEUCORE_DATASOURCE'].split(':', 1)
 datasource_id = datasource[0]
@@ -51,6 +48,8 @@ def name_to_id(name, name_type):
     >>> name_to_id('Nonexistent', 'solar_system')
     """
 
+    logger.info("Lookup for name", extra={"name": name, "name_type": name_type})
+
     if name_type == 'corporation':
         category = 'corporations'
     elif name_type == 'inventory_type':
@@ -60,11 +59,18 @@ def name_to_id(name, name_type):
     elif name_type == 'character':
         category = 'characters'
     else:
+        logger.info("No proper type provided, returning None")
+
         return None
     try:
+        logger.info("Looking up data in cache", extra={"category": category, "name": name})
+
         return cat_name_id[category][name]
     except KeyError:
         # data not found in cache
+        logger.info("Data not found in cache", extra={"category": category, "name": name})
+        logger.debug("Category cache data", extra={"cache": cat_name_id})
+
         pass
     # try fetch ID
     try:
@@ -75,6 +81,9 @@ def name_to_id(name, name_type):
         return cat_name_id[category][name]
     except KeyError:
         # data not found after fetching
+        logger.info("Data not found in cache on second run", extra={"category": category, "name": name})
+        logger.debug("Category cache data", extra={"cache": cat_name_id})
+
         return None
 
 
@@ -91,6 +100,7 @@ def names_to_ids(lookup_names: list):
     Returns:
         dict: {'category':{'name':id}}
     """
+    logger.info("Resolving names", extra={"names": lookup_names})
 
     names = []
     r_val_cat_name_id = {}  # {'category':{'name':id}}
@@ -125,6 +135,9 @@ def names_to_ids(lookup_names: list):
                         else:
                             r_val_cat_name_id[c] = {n: cat_name_id[c][n]}
                         r_val_cat_name_id[entry['name']] = entry['id']
+
+    logger.info("Resolving completed", extra={"data": r_val_cat_name_id})
+
     return r_val_cat_name_id
 
 
@@ -144,6 +157,8 @@ def ids_to_names(lookup_ids):
     ...
     requests.exceptions.HTTPError: Ensure all IDs are valid before resolving.
     """
+    logger.info("Looking up ids", extra={"lookup": lookup_ids})
+
     ids = []
     id_name = {}
     for i in lookup_ids:
@@ -165,6 +180,8 @@ def ids_to_names(lookup_ids):
                         cat_name_id[d_cat] = {}
                     cat_name_id[d_cat][d_name] = d_id
                     id_name[d_id] = d_name
+
+    logger.info("Lookup finished", extra={"returned": dict(sorted(id_name.items()))})
 
     return dict(sorted(id_name.items()))
 

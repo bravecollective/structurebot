@@ -10,7 +10,7 @@ from .assets import Asset, is_system_id
 from .config import CONFIG
 from .pos_resources import pos_fuel
 from .util import ncr, name_to_id, HTTPError
-
+from structurebot.logger import logger
 
 def nearest(source, destinations):
     (sx, sy, sz) = (source['x'], source['y'], source['z'])
@@ -60,6 +60,8 @@ class Pos(Asset):
         self.fuels = [Asset.from_id(t.get('type_id'), quantity=t.get('quantity'))
                       for t in fuels]
         self.mods = mods
+
+        logger.debug("Class init", extra={**self.__dict__})
 
     @classmethod
     def from_id(cls, corp_id, starbase_id, type_id, system_id, moon_id, state,

@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from .util import ncr, name_to_id, HTTPError
+from structurebot.logger import logger
 
 
 class Region(object):
@@ -16,6 +17,8 @@ class Region(object):
         """
         self.region_id = region_id
         self.name = name
+
+        logger.debug("Class init", extra={**self.__dict__})
 
     @classmethod
     def from_id(cls, id):
@@ -74,6 +77,8 @@ class Constellation(object):
         self.region = Region.from_id(self.region_id)
         self.name = name
 
+        logger.debug("Class init", extra={**self.__dict__})
+
     @classmethod
     def from_id(cls, id):
         """Base utility class to pull ESI universe info by id
@@ -127,6 +132,8 @@ class System(object):
         self.constellation_id = constellation_id
         self.constellation = Constellation.from_id(self.constellation_id)
         self.name = name
+
+        logger.debug("Class init", extra={**self.__dict__})
 
     @classmethod
     def from_id(cls, id):

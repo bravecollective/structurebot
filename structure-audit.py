@@ -9,6 +9,7 @@ import sys
 
 from structurebot.citadels import Structure
 from structurebot.config import CONFIG
+from structurebot.logger import setup_logger
 
 
 if __name__ == '__main__':
@@ -22,7 +23,9 @@ if __name__ == '__main__':
     level = logging.WARNING
     if CONFIG['DEBUG'] or args.debug:
         level = logging.INFO
-    logging.basicConfig(level=level)
+
+    setup_logger(level=level)
+
     pyswagger_logger = logging.getLogger('pyswagger')
     pyswagger_logger.setLevel(logging.ERROR)
     structures = Structure.from_corporation(CONFIG['CORPORATION_NAME'])

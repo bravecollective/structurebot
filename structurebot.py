@@ -9,6 +9,7 @@ from structurebot.util import notify_slack, name_to_id
 from structurebot.citadels import Structure
 from structurebot.assets import Asset
 from structurebot.pos import check_pos
+from structurebot.logger import setup_logger
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--suppress-upcoming-detonations', dest='upcoming_detonations', action='store_false')
@@ -26,9 +27,8 @@ debug = CONFIG['DEBUG'] or args.debug
 level = logging.WARNING
 if debug:
     level = logging.INFO
-logging.basicConfig(level=level)
-pyswagger_logger = logging.getLogger('pyswagger')
-pyswagger_logger.setLevel(logging.ERROR)
+setup_logger(level=level)
+
 
 messages = []
 errors = []
